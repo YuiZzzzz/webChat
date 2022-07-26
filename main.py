@@ -1,33 +1,38 @@
-from flask import Flask, render_template, request
-from flask_socketio import SocketIO, send, emit, join_room, leave_room
-import eventlet
+import csv
+import json
 
-eventlet.monkey_patch()
+from flask import Flask, render_template, request, redirect, url_for
 
-app = Flask('ChatRoom', static_folder='static', template_folder='templates')
-app.config['SECRET_KEY'] = 'abcdefg'
+
+
+
+app = Flask(__name__)
+app.secret_key = '!@#$%^&*()11'
 socketio = SocketIO(app)
 
-@app.route('/')
-def main():
-    return render_template('index.html')
 
-@socketio.on('message')
-def handle_message(msg):
-    print('服务器收到信息:{}'.format(msg))
 
-@socketio.event
-def join_room(room_number):
-    print('房间号:{}'.format(room_number))
-    join_room(room_number['room'])
+@app.route('/', methods=['GET','POST'])
+def index():
+    if request.method == 'GET':
 
-    emit('joined',{
-        'user':request.sid,
-        'room':room_number['room']
-    }, to=room_number['room'])
+        with open('static/data/chat.json', 'r') as f:
+            data = json.load(f)
+        return render_template('index.html', data=data)
 
+    if request.method == 'POST':
+        msg = request.form['msg']
+        msg = {'msg':msg}
+
+        with open('static/data/chat.json', 'r') as f:
+            data = json.load(f)
+        data.append(msg)
+        with open('static/data/chat.json', 'w') as f:
+            json.dump(data, f)
+
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, threaded=True)
     socketio.run(app)

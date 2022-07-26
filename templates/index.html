@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>开始聊天吧～！</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" src="{{url_for('static', filename='js/index.js')}}"></script>
-</head>
-<body>
-    <h3>Join Room</h3>
-    <form id="join-room" method="post" action="#">
-        <label>房间号</label>
-        <input type="text" id="room-number" required>
-        <input type="submit" id="submit-room-number">
-    </form>
-    <button id="leave-room">Leave</button>
+    <head>
+        <title>聊天室</title>
+        <meta charset="UTF-8">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket = io();
 
-    <ul id="text-content"></ul>
+            socket.on('connect', function() {
+                socket.emit('my event', {data: 'I\'m connected!'});
+            });
+        </script>
+    </head>
 
-    <form id="submit-form" method="post" action="#">
-        <textarea placeholder="在此输入" name="msg" id="chat-msg" cols="30" rows="10"></textarea>
-        <button type="submit">发送</button>
-    </form>
+    <body>
+        <h3>聊天室～！</h3>
+        <div id="content">
+            {% for item in data %}
+                <p>{{item.msg}}</p>
+            {% endfor %}
+        </div>
 
-</body>
+        <form id="send" action="/" method="post">
+            <input type="text" id="msg" name="msg">
+            <button type="submit" id="button">发送</button>
+        </form>
+
+
+    </body>
 </html>

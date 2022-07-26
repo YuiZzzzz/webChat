@@ -1,18 +1,20 @@
-$(document).ready(function(){
+$(document).ready(function () {
     var socket = io()
-
-    socket.on('connect', function (){
-        socket.send('客户端已连接...')
+    var id = 0
+    socket.on("connect", function (){
+       socket.send("客户端已连接")
+       id += 1;
     });
 
-    $('form#join-room').submit(function (event){
-        socket.emit('join_room', {
-            room:$('#room-number').val()
-        })
+
+    $('form#send').submit(function () {
+        socket.emit('sendMsg', {
+            msg:$('#chatMsg').val(),
+            user_id: id
+        });
+        $('#chatMsg').val("");
+        console.log("已发送 " + $('#chatMsg').val())
         return false
     });
 
-    socket.on('joined', function(msg, cb){
-        $('ul#text-content').append('<li>' + msg.user + '已加入房间' + msg.room + '</li>')
-    });
-});
+})
