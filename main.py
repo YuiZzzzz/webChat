@@ -16,8 +16,14 @@ TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
 LOG_PATH = 'static/data/server_log.json'
 CHAT_PATH = 'static/data/chat.json'
 
+host = '127.0.0.1'
+port = 9999
+
 
 global client
+client = Client()
+client.c_sock.connect((host, port))
+
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -28,7 +34,7 @@ def index():
         if 'username' in session:
             tr = threading.Thread(target=client.recv)
             tr.start()
-            data = read()
+            data = read('chat')
             return render_template('index.html', data=data)
         else:
             return render_template('index.html', data=[])
@@ -50,12 +56,10 @@ def index():
             username = request.form['username']
             session['username'] = username
 
-            host = '127.0.0.1'
-            port = 9999
+
 
             # 创建一个client
-            client = Client()
-            client.c_sock.connect((host, port))
+
             client.send(username)
 
 

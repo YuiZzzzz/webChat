@@ -1,34 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>聊天室</title>
-        <meta charset="UTF-8">
+{% extends "app.html" %}
 
-    </head>
+{% block main %}
 
-    <body>
-        <h3>聊天室～！</h3>
-        <div id="content">
+
+        <h3 style="padding: 10px;">来聊天吧～！</h3>
+
+        <dl class="row">
             {% for item in data %}
-                <p>{{item.username}}: {{item.msg}} - {{item.time}}</p>
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <dt class="col-sm-3">{{item.username}}</dt>
+                    <dd class="col-sm-9">{{item.msg}} - {{item.time}}</dd>
+                </div>
+            </div>
+            <div style="padding: 10px 0 10px 0;"></div>
             {% endfor %}
-        </div>
+        </dl>
+
+
         {% if not session.get('username') %}
+
         <form id="login" action="/" method="post">
-            <input type="text" id="username" name="username">
-            <button type="submit" id="login-button">登录</button>
+            <div class="mb-3">
+                <label for="username" class="form-label">用户名</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="username">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">密码</label>
+                <input type="text" class="form-control" id="password" placeholder="password">
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary" id="login-button">登录</button>
+            </div>
         </form>
         {% else %}
         <form id="send" action="/" method="post">
-            <input type="text" id="msg" name="msg">
-            <button type="submit" id="send-button">发送</button>
-            <a href="/logout"><button type="button" id="logout-button">登出</button></a>
+            <div style="padding: 10px 0 10px 0;">
+                <input class="form-control" type="text" placeholder="Input your message here..." id="msg" name="msg">
+            </div>
+            <button type="submit" class="btn btn-primary mb-3" id="send-button">发送</button>
+            <a href="/logout"><button type="button" class="btn btn-primary mb-3" id="logout-button">登出</button></a>
 
         </form>
 
         {% endif %}
 
 
-
-    </body>
-</html>
+{% endblock %}

@@ -26,13 +26,17 @@ def write(type, username, msg):
     with open(path, 'w') as f:
         json.dump(data, f)
 
-def read():
+def read(type):
+    if type == 'log':
+        path = '/Users/yui/PycharmProjects/flaskSocketTest/static/data/server_log.json'
+    elif type == 'chat':
+        path = '/Users/yui/PycharmProjects/flaskSocketTest/static/data/chat.json'
     try:
-        with open(LOG_PATH, 'r') as f:
+        with open(path, 'r') as f:
             data = json.load(f)
             return data
     except json.decoder.JSONDecodeError:
-        with open(LOG_PATH, 'w') as f:
+        with open(path, 'w') as f:
             json.dump([], f)
         return []
 
