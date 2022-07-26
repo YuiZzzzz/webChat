@@ -3,28 +3,31 @@
     <head>
         <title>聊天室</title>
         <meta charset="UTF-8">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-        <script type="text/javascript" charset="utf-8">
-            var socket = io();
 
-            socket.on('connect', function() {
-                socket.emit('my event', {data: 'I\'m connected!'});
-            });
-        </script>
     </head>
 
     <body>
         <h3>聊天室～！</h3>
         <div id="content">
             {% for item in data %}
-                <p>{{item.msg}}</p>
+                <p>{{item.username}}: {{item.msg}} - {{item.time}}</p>
             {% endfor %}
         </div>
-
+        {% if not session.get('username') %}
+        <form id="login" action="/" method="post">
+            <input type="text" id="username" name="username">
+            <button type="submit" id="login-button">登录</button>
+        </form>
+        {% else %}
         <form id="send" action="/" method="post">
             <input type="text" id="msg" name="msg">
-            <button type="submit" id="button">发送</button>
+            <button type="submit" id="send-button">发送</button>
+            <a href="/logout"><button type="button" id="logout-button">登出</button></a>
+
         </form>
+
+        {% endif %}
+
 
 
     </body>

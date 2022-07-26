@@ -1,38 +1,75 @@
 import csv
 import json
+import threading
+import time
 
-from flask import Flask, render_template, request, redirect, url_for
-
+from flask import Flask, render_template, request, redirect, url_for, session
+from static.utils.log_io import *
+from static.utils.client import Client
 
 
 
 app = Flask(__name__)
 app.secret_key = '!@#$%^&*()11'
-socketio = SocketIO(app)
+
+TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
+LOG_PATH = 'static/data/server_log.json'
+CHAT_PATH = 'static/data/chat.json'
 
 
+global client
 
 @app.route('/', methods=['GET','POST'])
 def index():
+    global client
+
     if request.method == 'GET':
 
-        with open('static/data/chat.json', 'r') as f:
-            data = json.load(f)
-        return render_template('index.html', data=data)
+        if 'username' in session:
+            tr = threading.Thread(target=client.recv)
+            tr.start()
+            data = read()
+            return render_template('index.html', data=data)
+        else:
+            return render_template('index.html', data=[])
+
 
     if request.method == 'POST':
-        msg = request.form['msg']
-        msg = {'msg':msg}
+        print(session)
 
-        with open('static/data/chat.json', 'r') as f:
-            data = json.load(f)
-        data.append(msg)
-        with open('static/data/chat.json', 'w') as f:
-            json.dump(data, f)
+        if 'username' in session:
+            if client:
+                msg = request.form['msg']
+                write('chat', session.get('username'), msg)
+                client.send(msg)
 
-        return redirect(url_for('index'))
+                return redirect(url_for('index'))
+
+
+        else:
+            username = request.form['username']
+            session['username'] = username
+
+            host = '127.0.0.1'
+            port = 9999
+
+            # 创建一个client
+            client = Client()
+            client.c_sock.connect((host, port))
+            client.send(username)
+
+
+            return redirect(url_for('index'))
+
+
+@app.route('/logout', methods=['GET','POST'])
+def logout():
+    session.pop('username')
+    return redirect(url_for('index'))
+
+
+
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True, threaded=True)
-    socketio.run(app)
+    app.run()
