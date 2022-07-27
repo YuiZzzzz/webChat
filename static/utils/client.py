@@ -19,11 +19,10 @@ class Client:
     def recv(self, mtu=1024):
         while True:
             msg = self.c_sock.recv(mtu).decode('utf-8')
-            write('chat', self.username, msg)
             if len(msg) == 0:
                 continue
             self.count += 1
-            write('chat', self.username, msg)
+            # write('chat', self.username, msg)
             print('recv{}: {}'.format(self.count, msg))
 
 
